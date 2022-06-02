@@ -56,6 +56,21 @@ B01111111, B11111110,
 B00000000, B00000000,
 };
 
+static const unsigned char PROGMEM bitmap_arrow_6_12[] = {
+B01000000,
+B01100000,
+B01110000,
+B01111000,
+B01111100,
+B01111110,
+B01111100,
+B01111000,
+B01110000,
+B01100000,
+B01000000,
+B00000000,
+};
+
 enum class MenuState {
     Play,
     Settings
@@ -116,7 +131,7 @@ void drawRollMenu(std::array <MenuOption, N> options, int selected) {
     y += 24;
     if (editingValue) {
         display.setCursor(x, y + 1);
-        display.print('>');
+        display.drawBitmap(x, y+1, bitmap_arrow_6_12, 6, 12, COLOR_WHITE);
 //        display.fillRect(x, y, strlen(title) * 12, 18, SSD1306_WHITE);
 //        display.setTextColor(SSD1306_BLACK);
     }
@@ -152,7 +167,7 @@ void drawMenu(std::array <String, N> options, int selected) {
 
 void update() {
 
-    Serial.println((int) Inputs::instance.shift.event);
+//    Serial.println((int) Inputs::instance.shift.event);
     switch (Inputs::instance.shift.event) {
         case controlino::Button::Event::ClickPress:
             Serial.print(F("shift click press"));

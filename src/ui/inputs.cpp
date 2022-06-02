@@ -16,9 +16,9 @@ void setupInputs() {
 void pollInputs() {
     digitalWrite(MUX1_EN, LOW);
     Inputs::instance.shift = __buttonShift.check();
-    if((int)Inputs::instance.shift.event > 0) {
-        Serial.print(F("poll "));
-        Serial.println((int) Inputs::instance.shift.event); }
+//    if((int)Inputs::instance.shift.event > 0) {
+//        Serial.print(F("poll "));
+//        Serial.println((int) Inputs::instance.shift.event); }
 
     Inputs::instance.encoder1 = __buttonEnc1.check();
     Inputs::instance.encoder2 = __buttonEnc2.check();
