@@ -17,41 +17,43 @@
 #include "inputs.h"
 #include "playPage.h"
 
-static const unsigned char PROGMEM CHECKBOX_UNCHECKED[] = {
-        B00000000, B00000000,
-        B00000000, B00000000,
-        B01111111, B11111110,
-        B01000000, B00000010,
-        B01000000, B00000010,
-        B01000000, B00000010,
-        B01000000, B00000010,
-        B01000000, B00000010,
-        B01000000, B00000010,
-        B01000000, B00000010,
-        B01000000, B00000010,
-        B01000000, B00000010,
-        B01000000, B00000010,
-        B01000000, B00000010,
-        B01111111, B11111110,
-        B00000000, B00000000,
+static const unsigned char PROGMEM
+CHECKBOX_UNCHECKED[] = {
+B00000000, B00000000,
+B00000000, B00000000,
+B01111111, B11111110,
+B01000000, B00000010,
+B01000000, B00000010,
+B01000000, B00000010,
+B01000000, B00000010,
+B01000000, B00000010,
+B01000000, B00000010,
+B01000000, B00000010,
+B01000000, B00000010,
+B01000000, B00000010,
+B01000000, B00000010,
+B01000000, B00000010,
+B01111111, B11111110,
+B00000000, B00000000,
 };
-static const unsigned char PROGMEM CHECKBOX_CHECKED[] = {
-        B00000000, B00000000,
-        B00000000, B00000000,
-        B01111111, B11111110,
-        B01000000, B00000010,
-        B01011000, B00011010,
-        B01001100, B00110010,
-        B01000110, B01100010,
-        B01000011, B11000010,
-        B01000001, B10000010,
-        B01000011, B11000010,
-        B01000110, B01100010,
-        B01001100, B00110010,
-        B01011000, B00011010,
-        B01000000, B00000010,
-        B01111111, B11111110,
-        B00000000, B00000000,
+static const unsigned char PROGMEM
+CHECKBOX_CHECKED[] = {
+B00000000, B00000000,
+B00000000, B00000000,
+B01111111, B11111110,
+B01000000, B00000010,
+B01011000, B00011010,
+B01001100, B00110010,
+B01000110, B01100010,
+B01000011, B11000010,
+B01000001, B10000010,
+B01000011, B11000010,
+B01000110, B01100010,
+B01001100, B00110010,
+B01011000, B00011010,
+B01000000, B00000010,
+B01111111, B11111110,
+B00000000, B00000000,
 };
 
 enum class MenuState {
@@ -98,8 +100,8 @@ int selectedMenuItem = 0;
 byte tempo = 55;
 
 template<std::size_t N>
-void drawRollMenu(std::array<MenuOption, N> options, int selected) {
-    size_t uselected = (size_t) (min(max(selected, 0), (int) options.size() - 1));
+void drawRollMenu(std::array <MenuOption, N> options, int selected) {
+    size_t uselected = (size_t)(min(max(selected, 0), (int) options.size() - 1));
     display.setTextWrap(false);
     display.setTextSize(2);
     display.setCursor(0, 0);
@@ -128,8 +130,8 @@ void drawRollMenu(std::array<MenuOption, N> options, int selected) {
 }
 
 template<std::size_t N>
-void drawMenu(std::array<String, N> options, int selected) {
-    size_t uselected = (size_t) (min(max(selected, 0), (int) options.size() - 1));
+void drawMenu(std::array <String, N> options, int selected) {
+    size_t uselected = (size_t)(min(max(selected, 0), (int) options.size() - 1));
     display.setTextWrap(false);
     display.setTextSize(2);
     display.setCursor(0, 0);
@@ -150,7 +152,7 @@ void drawMenu(std::array<String, N> options, int selected) {
 
 void update() {
 
-    Serial.println((int)Inputs::instance.shift.event);
+    Serial.println((int) Inputs::instance.shift.event);
     switch (Inputs::instance.shift.event) {
         case controlino::Button::Event::ClickPress:
             Serial.print(F("shift click press"));
@@ -161,6 +163,7 @@ void update() {
     }
     switch (menuState) {
         case MenuState::Play:
+        {
             for (size_t i = 0; i < STEP_COUNT; i++) {
                 switch (Inputs::instance.steps[i].event) {
                     case controlino::Button::Event::Click:
@@ -177,16 +180,19 @@ void update() {
                 }
             }
 
-            if(Inputs::instance.heldStep != -1)
-            {
-                int delta = Inputs::instance.encoderDelta(0);
-                if(delta != 0) {
+            int delta = Inputs::instance.encoderDelta(0);
+            if (delta != 0) {
+                if (Inputs::instance.heldStep != -1) {
                     Step step = seq.getStep(Inputs::instance.heldStep);
                     step.note = max(0, min(80, step.note + delta));
                     seq.setStep(Inputs::instance.heldStep, step);
+                } else {
+                    Pattern &p = seq.getPattern();
+                    p.note = max(0, min(80, p.note + delta));
                 }
             }
             break;
+        }
         case MenuState::Settings:
             if (Inputs::instance.encoder1.event == controlino::Button::Event::Click) {
                 editingValue = !editingValue;
@@ -208,34 +214,33 @@ void update() {
 }
 
 
-
 static std::array<MenuOption, 3>
-SettingsMenuOptions = {{
-                               {([] { return ("Tempo"); }),
-                                [] {
-                                    tempo += Inputs::instance.editingValueDelta;
-                                    display.print(tempo);
-                                    uClock.setTempo(tempo);
-                                    return Action::None;
-                                }},
-                               {([] { return ("Invert"); }),
-                                []() {
-                                    bool val = settings.invertLcd();
-                                    Serial.print(val);
-                                    if (editingValue) {
-                                        Serial.println();
-                                        Serial.println(!val);
-                                        editingValue = false;
-                                        val = !val;
-                                        display.invertDisplay(settings.invertLcd(val));
-                                    }
-                                        display.drawBitmap(display.getCursorX(), display.getCursorY(),
-                                                     val ? CHECKBOX_CHECKED : CHECKBOX_UNCHECKED, 16, 16,
-                                                     SSD1306_WHITE);
-                                        return Action::None;
-                                    }},
-                               {([] { return ("ERT"); }), [] { return Action::None; }}
-                       }};
+        SettingsMenuOptions = {{
+                                       {([] { return ("Tempo"); }),
+                                        [] {
+                                            tempo += Inputs::instance.editingValueDelta;
+                                            display.print(tempo);
+                                            uClock.setTempo(tempo);
+                                            return Action::None;
+                                        }},
+                                       {([] { return ("Invert"); }),
+                                        []() {
+                                            bool val = settings.invertLcd();
+                                            Serial.print(val);
+                                            if (editingValue) {
+                                                Serial.println();
+                                                Serial.println(!val);
+                                                editingValue = false;
+                                                val = !val;
+                                                display.invertDisplay(settings.invertLcd(val));
+                                            }
+                                            display.drawBitmap(display.getCursorX(), display.getCursorY(),
+                                                               val ? CHECKBOX_CHECKED : CHECKBOX_UNCHECKED, 16, 16,
+                                                               SSD1306_WHITE);
+                                            return Action::None;
+                                        }},
+                                       {([] { return ("ERT"); }), [] { return Action::None; }}
+                               }};
 
 void draw() {
     switch (menuState) {
