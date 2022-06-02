@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.asset": "yaml",
+        "*.ino0": "cpp"
+    }
+}
