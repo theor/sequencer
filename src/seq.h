@@ -28,12 +28,21 @@ struct Seq
     void toggleStep(byte stepIndex) {
         size_t pageIndex = stepIndex / STEP_COUNT;
         size_t stepPageIndex = stepIndex % STEP_COUNT;
-        Step& s = (patterns[patternIndex].pages[pageIndex].steps[stepPageIndex]);
-        s.note = s.note != 0 ? 0 : 40;
+        Pattern &pattern = getPattern();
+        Step& s = (pattern.pages[pageIndex].steps[stepPageIndex]);
+        s.active = !s.active;
+        if(s.active) {
+            s.note = pattern.note;
+            s.velocity = 127;
+        }
 
     }
 
-    Step getStep(byte stepIndex) {
+    Pattern& getPattern() {
+        return patterns[patternIndex];
+    }
+
+    Step& getStep(byte stepIndex) {
         size_t pageIndex = stepIndex / STEP_COUNT;
         size_t stepPageIndex = stepIndex % STEP_COUNT;
         return patterns[patternIndex].pages[pageIndex].steps[stepPageIndex];
@@ -41,7 +50,7 @@ struct Seq
     bool hasStep(byte stepIndex) {
         size_t pageIndex = stepIndex / STEP_COUNT;
         size_t stepPageIndex = stepIndex % STEP_COUNT;
-        return patterns[patternIndex].pages[pageIndex].steps[stepPageIndex].note != 0;
+        return patterns[patternIndex].pages[pageIndex].steps[stepPageIndex].active;
     }
 
     void setStep(byte stepIndex, Step step)
@@ -71,12 +80,12 @@ struct Seq
         Page page = patterns[patternIndex].pages[0];
         Step step = page.steps[position];
 
-        if(step.note != 0) {
+        if(step.active != 0) {
             if(_noteRunning != 0) {
                 _noteOff(MIDI_CHANNEL, _noteRunning, 0);
                 _noteRunning = 0;
             }
-            _noteOn(MIDI_CHANNEL, step.note, 127);
+            _noteOn(MIDI_CHANNEL, step.note, step.velocity);
             _noteRunning = step.note;
         }
     }
