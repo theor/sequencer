@@ -2,7 +2,7 @@
 #include <SPI.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
+#include <Adafruit_ST7735.h>
 #include <Adafruit_GFX.h>
 #include <array>
 
@@ -67,14 +67,11 @@ void setup() {
     seq.setNoteCallbacks(&sendNoteOn, &sendNoteOff);
     Serial.begin(115200);
     delay(1000);
-    if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
-        Serial.println(F("SSD1306 allocation failed"));
-        for (;;);
-    }
+    display.initR(INITR_BLACKTAB);
+    display.setRotation(1);
 
-    display.clearDisplay();
-    display.drawPixel(10, 10, SSD1306_WHITE);
-    display.display();
+    display.fillScreen(COLOR_BLACK);
+    display.drawPixel(10, 10, COLOR_WHITE);
 
     setupInputs();
 
@@ -97,6 +94,7 @@ void setup() {
     settings.initSettings(
             [](bool invertLcd){ display.invertDisplay(invertLcd); }
             );
+    display.fillScreen(COLOR_BLACK);
 }
 
 
@@ -112,10 +110,9 @@ void loop() {
         pollInputs();
         sinceLastDraw = 0;
 
-        display.clearDisplay();
+//        display.fillScreen(COLOR_BLACK);
         update();
+        display.fillScreen(COLOR_BLACK);
         draw();
-
-        display.display();
     }
 }

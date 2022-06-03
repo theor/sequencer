@@ -124,7 +124,7 @@ void drawRollMenu(std::array <MenuOption, N> options, int selected) {
     const char *title = options[uselected].getTitle();
 //    display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
 
-    display.setTextColor(SSD1306_WHITE, SSD1306_BLACK);
+    display.setTextColor(COLOR_WHITE, COLOR_BLACK);
     display.print(title);
     y += 24;
     if (editingValue) {
@@ -153,9 +153,9 @@ void drawMenu(std::array <String, N> options, int selected) {
         int x = 8;
         display.setCursor(x, y + 1);
         if (i == uselected)
-            display.fillRect(x, y, options[i].length() * 6, 9, SSD1306_WHITE);
-        display.setTextColor(i == uselected ? SSD1306_BLACK : SSD1306_WHITE,
-                             i == uselected ? SSD1306_WHITE : SSD1306_BLACK);
+            display.fillRect(x, y, options[i].length() * 6, 9, COLOR_WHITE);
+        display.setTextColor(i == uselected ? COLOR_BLACK : COLOR_WHITE,
+                             i == uselected ? COLOR_WHITE : COLOR_BLACK);
         display.print(options[i]);
         y += 16;
     }
@@ -273,7 +273,7 @@ static std::array<MenuOption, 3>
                                             }
                                             display.drawBitmap(display.getCursorX(), display.getCursorY(),
                                                                val ? CHECKBOX_CHECKED : CHECKBOX_UNCHECKED, 16, 16,
-                                                               SSD1306_WHITE);
+                                                               COLOR_WHITE);
                                             return Action::None;
                                         }},
                                        {([] { return ("ERT"); }), [] { return Action::None; }}

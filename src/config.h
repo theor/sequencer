@@ -27,11 +27,10 @@ Serial.print(F("ASSERT FAILED: " #x)); \
 }
 
 #define CHECK_HALT if(__halt) { \
-        display.clearDisplay(); \
+        display.fillScreen(COLOR_BLACK); \
         display.setTextWrap(true); \
         display.setCursor(2,2);\
         display.print(__globalError); \
-        display.display();      \
         return;\
 }
 

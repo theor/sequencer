@@ -4,16 +4,19 @@
 
 #include "config.h"
 #include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
-#define COLOR_BLACK 0   ///< Draw 'off' pixels
-#define COLOR_WHITE 1   ///< Draw 'on' pixels
+#include <Adafruit_ST7735.h>
+#define COLOR_BLACK ST7735_BLACK   ///< Draw 'off' pixels
+#define COLOR_WHITE ST7735_WHITE   ///< Draw 'on' pixels
 #define COLOR_INVERSE 2 ///< Invert pixels
-#define SCREEN_WIDTH 128 // OLED display width, in pixels
-#define SCREEN_HEIGHT 64 // OLED display height, in pixels
-#define OLED_RESET -1       // Reset pin # (or -1 if sharing Arduino reset pin)
-#define SCREEN_ADDRESS 0x3c ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
-static Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire2, OLED_RESET);
+#define SCREEN_WIDTH 160 // OLED display width, in pixels
+#define SCREEN_HEIGHT 128 // OLED display height, in pixels
 
+#define TFT_CS        38
+#define TFT_RST        33 // Or set to -1 and connect to Arduino RESET pin
+#define TFT_DC         39 // AO
+#define TFT_MOSI         26 //SDA
+#define TFT_SCLK         27
+static Adafruit_ST7735 display = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
 static const float INV_DEG3 = 60.0f / PI;
 static const float DEG3 = PI / 60.0f;
 void fillArc2(int x, int y, float start_angle, int seg_count, int rx, int ry, int w, unsigned int colour)
