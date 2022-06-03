@@ -67,8 +67,8 @@ void setup() {
     seq.setNoteCallbacks(&sendNoteOn, &sendNoteOff);
     Serial.begin(115200);
     delay(1000);
-    display.initR(INITR_BLACKTAB);
-    display.setRotation(1);
+
+    initDisplay();
 
     display.fillScreen(COLOR_BLACK);
     display.drawPixel(10, 10, COLOR_WHITE);

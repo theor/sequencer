@@ -3,6 +3,7 @@
 #define DISPLAY_H
 
 #include "config.h"
+#include <SPI.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_ST7735.h>
 #define COLOR_BLACK ST7735_BLACK   ///< Draw 'off' pixels
@@ -16,9 +17,16 @@
 #define TFT_DC         39 // AO
 #define TFT_MOSI         26 //SDA
 #define TFT_SCLK         27
-static Adafruit_ST7735 display = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
+//static Adafruit_ST7735 display = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
+static Adafruit_ST7735 display = Adafruit_ST7735(&SPI1, TFT_CS, TFT_DC, TFT_RST);
 static const float INV_DEG3 = 60.0f / PI;
 static const float DEG3 = PI / 60.0f;
+
+void initDisplay(){
+    display.initR(INITR_BLACKTAB);
+    display.setRotation(1);
+}
+
 void fillArc2(int x, int y, float start_angle, int seg_count, int rx, int ry, int w, unsigned int colour)
 {
     float seg = DEG3; // Segments are 3 degrees wide = 120 segments for 360 degrees
