@@ -12,7 +12,7 @@ namespace duration
 
 constexpr unsigned short Touch       = 20;
 constexpr unsigned short Slip        = 20;
-constexpr unsigned short Press       = 800;
+constexpr unsigned short Press       = 400;
 constexpr unsigned short DoubleClick = 220;
 
 } // duration

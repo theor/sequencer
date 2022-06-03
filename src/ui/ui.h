@@ -17,8 +17,7 @@
 #include "inputs.h"
 #include "playPage.h"
 
-static const unsigned char PROGMEM
-CHECKBOX_UNCHECKED[] = {
+static const unsigned char PROGMEM CHECKBOX_UNCHECKED[] = {
 B00000000, B00000000,
 B00000000, B00000000,
 B01111111, B11111110,
@@ -36,8 +35,7 @@ B01000000, B00000010,
 B01111111, B11111110,
 B00000000, B00000000,
 };
-static const unsigned char PROGMEM
-CHECKBOX_CHECKED[] = {
+static const unsigned char PROGMEM CHECKBOX_CHECKED[] = {
 B00000000, B00000000,
 B00000000, B00000000,
 B01111111, B11111110,
@@ -170,7 +168,7 @@ void update() {
 //    Serial.println((int) Inputs::instance.shift.event);
     switch (Inputs::instance.shift.event) {
         case controlino::Button::Event::ClickPress:
-            Serial.print(F("shift click press"));
+//            Serial.print(F("shift click press"));
             menuState = menuState == MenuState::Settings ? MenuState::Play : MenuState::Settings;
             break;
         default:
@@ -184,13 +182,15 @@ void update() {
                     case controlino::Button::Event::Click:
                         seq.toggleStep(i);
                         break;
-                    case controlino::Button::Event::Down:
+                    case controlino::Button::Event::Press:
                         Inputs::instance.heldStep = i;
                         break;
                     case controlino::Button::Event::Up:
                         Inputs::instance.heldStep = -1;
                         break;
                     default:
+                        if(Inputs::instance.heldStep == -1 && Inputs::instance.steps[i].pressed && Inputs::instance.encoderDelta(0) != 0)
+                            Inputs::instance.heldStep = i;
                         break;
                 }
             }

@@ -17,16 +17,12 @@
 #include "ui/ui.h"
 
 
-unsigned long m;
-char c[10];
 const int ledPin = 13;
-
-volatile byte b = 0;
 
 // The callback function wich will be called by Clock each Pulse of 96PPQN clock resolution.
 void ClockOut96PPQN(uint32_t tick) {
     const int DIV = 6;
-    b = (tick / DIV) % 256;
+    byte b = (tick / DIV) % 256;
     if ((tick % DIV) == DIV - 1) {
         // Send MIDI_CLOCK to external gears
         seq.step(b + 1);
