@@ -43,6 +43,11 @@ struct Page
 //        {1, 40, 96},
 //    };
 
+inline Step& getStep(byte stepIndex) {
+    ASSERT(stepIndex < STEP_COUNT);
+    return steps[stepIndex];
+}
+
     void dump()
     {
         for (size_t i = 0; i < STEP_COUNT; i++)
@@ -55,10 +60,17 @@ struct Page
 
 struct Pattern
 {
+    static const byte PAGE_COUNT  = 1;
     uint8_t note = 48;
     Page pages[1] = {
         {},
     };
+
+    inline Page& getPage(byte pageIndex) {
+
+        ASSERT(pageIndex < PAGE_COUNT);
+        return pages[pageIndex];
+    }
 
     void dump()
     {

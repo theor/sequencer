@@ -17,17 +17,18 @@ struct Track {
     byte _noteRunning = 0;
 
     void setPattern(byte patternIndex, bool queue) {
-        byte clamped = max(0, min(patternIndex, PATTERN_COUNT));
+        ASSERT(patternIndex < PATTERN_COUNT);
         if (queue)
-            queuedPatternIndex = clamped;
+            queuedPatternIndex = patternIndex;
         else {
             // same index means no queuing back later
-            queuedPatternIndex = clamped;
-            this->patternIndex = clamped;
+            queuedPatternIndex = patternIndex;
+            this->patternIndex = patternIndex;
         }
     }
 
-    Pattern &getPattern() {
+    inline Pattern &getPattern() {
+        ASSERT(patternIndex < PATTERN_COUNT);
         return patterns[patternIndex];
     }
 
@@ -41,7 +42,7 @@ struct Track {
         size_t pageIndex = stepIndex / STEP_COUNT;
         size_t stepPageIndex = stepIndex % STEP_COUNT;
         Pattern &pattern = getPattern();
-        Step &s = (pattern.pages[pageIndex].steps[stepPageIndex]);
+        Step &s = (pattern.getPage(pageIndex).getStep(stepPageIndex));
         s.active = !s.active;
         if (s.active) {
             s.note = pattern.note;
@@ -53,19 +54,21 @@ struct Track {
     Step &getStep(byte stepIndex) {
         size_t pageIndex = stepIndex / STEP_COUNT;
         size_t stepPageIndex = stepIndex % STEP_COUNT;
-        return patterns[patternIndex].pages[pageIndex].steps[stepPageIndex];
+        ASSERT(pageIndex < PAGE_COUNT);
+        ASSERT(stepPageIndex < STEP_COUNT);
+        return getPattern().getPage(pageIndex).getStep(stepPageIndex);
     }
 
     bool hasStep(byte stepIndex) {
         size_t pageIndex = stepIndex / STEP_COUNT;
         size_t stepPageIndex = stepIndex % STEP_COUNT;
-        return patterns[patternIndex].pages[pageIndex].steps[stepPageIndex].active;
+        return getPattern().getPage(pageIndex).getStep(stepPageIndex).isActive();
     }
 
     void setStep(byte stepIndex, Step step) {
         size_t pageIndex = stepIndex / STEP_COUNT;
         size_t stepPageIndex = stepIndex % STEP_COUNT;
-        patterns[patternIndex].pages[pageIndex].steps[stepPageIndex] = step;
+        getPattern().getPage(pageIndex).getStep(stepPageIndex) = step;
     }
 };
 
@@ -87,8 +90,8 @@ struct Seq {
 
             byte currentTrackIndex = 0;
 
-            void setCurrentTrack(byte trackIndex) { currentTrackIndex = trackIndex; }
-            Track& getCurrentTrack() { return tracks[currentTrackIndex]; }
+            void setCurrentTrack(byte trackIndex) { ASSERT(trackIndex < TRACK_COUNT); currentTrackIndex = trackIndex; }
+            inline Track& getCurrentTrack() { ASSERT(currentTrackIndex < TRACK_COUNT); return tracks[currentTrackIndex]; }
 
 
             volatile byte _position;
@@ -134,7 +137,7 @@ struct Seq {
                             track.patternIndex = track.queuedPatternIndex;
                     }
                     Page page = track.patterns[track.patternIndex].pages[0];
-                    Step step = page.steps[position];
+                    Step step = page.getStep(position);
 
                     if (track._noteRunning != 0) {
                         _noteOff(track.midiChannel, track._noteRunning, 0);

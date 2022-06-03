@@ -106,6 +106,8 @@ void loop() {
     // seq.triggerNotes();
 //    if (sinceLastDraw % 16 == 0)
 
+    CHECK_HALT;
+
     if (sinceLastDraw >= 33) {
         pollInputs();
         sinceLastDraw = 0;

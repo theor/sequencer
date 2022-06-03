@@ -23,7 +23,7 @@ public:
   }
   void begin(int pinA, int pinB, CountMode countmode = CountMode::quarter, int inputMode = INPUT_PULLUP)
   {
-    enc.begin(pinA, pinB, countmode, inputMode);
+    ASSERT(enc.begin(pinA, pinB, countmode, inputMode));
   }
   void setLimits(int min, int max, bool periodic = false) { 
     this->_min = min;

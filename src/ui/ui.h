@@ -225,9 +225,8 @@ void update() {
                 }
             }
             if(delta1 != 0 && Inputs::instance.heldStep != -1) {
-                Step step = seq.getCurrentTrack().getStep(Inputs::instance.heldStep);
+                Step& step = seq.getCurrentTrack().getStep(Inputs::instance.heldStep);
                 step.velocity = max(0, min(127, step.velocity + delta1));
-                seq.getCurrentTrack().setStep(Inputs::instance.heldStep, step);
             }
             break;
         }
