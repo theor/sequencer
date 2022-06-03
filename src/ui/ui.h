@@ -79,7 +79,7 @@ static MenuState menuState = MenuState::Play;
 void printMenuState() {
     display.setCursor(SCREEN_WIDTH - 8 * 8, SCREEN_HEIGHT - 8);
     display.setTextSize(1);
-    display.setTextColor(SSD1306_WHITE);
+    display.setTextColor(COLOR_WHITE);
     switch (menuState) {
         case MenuState::Play:
             display.print(F("Play"));
@@ -178,16 +178,24 @@ void update() {
         case MenuState::Play:
         {
             for (size_t i = 0; i < STEP_COUNT; i++) {
-                if(Inputs::instance.shift.pressed){
+                // pick track
+                if(Inputs::instance.playPause.pressed){
                     if(Inputs::instance.steps[i].event == controlino::Button::Event::Click)
                     {
-                        seq.setPattern(i, true);
+                        seq.setCurrentTrack(i);
+                    }
+                }
+                // pick pattern
+                else if(Inputs::instance.shift.pressed){
+                    if(Inputs::instance.steps[i].event == controlino::Button::Event::Click)
+                    {
+                        seq.getCurrentTrack().setPattern(i, true);
                     }
                 } else {
                     switch (Inputs::instance.steps[i].event) {
                         case controlino::Button::Event::Click:
 
-                            seq.toggleStep(i);
+                            seq.getCurrentTrack().toggleStep(i);
                             break;
                         case controlino::Button::Event::Press:
                             Inputs::instance.heldStep = i;
@@ -208,18 +216,18 @@ void update() {
             int delta1 = Inputs::instance.encoderDelta(1);
             if (delta0 != 0) {
                 if (Inputs::instance.heldStep != -1) {
-                    Step step = seq.getStep(Inputs::instance.heldStep);
+                    Step step = seq.getCurrentTrack().getStep(Inputs::instance.heldStep);
                     step.note = max(0, min(80, step.note + delta0));
-                    seq.setStep(Inputs::instance.heldStep, step);
+                    seq.getCurrentTrack().setStep(Inputs::instance.heldStep, step);
                 } else {
-                    Pattern &p = seq.getPattern();
+                    Pattern &p = seq.getCurrentTrack().getPattern();
                     p.note = max(0, min(80, p.note + delta0));
                 }
             }
             if(delta1 != 0 && Inputs::instance.heldStep != -1) {
-                Step step = seq.getStep(Inputs::instance.heldStep);
+                Step step = seq.getCurrentTrack().getStep(Inputs::instance.heldStep);
                 step.velocity = max(0, min(127, step.velocity + delta1));
-                seq.setStep(Inputs::instance.heldStep, step);
+                seq.getCurrentTrack().setStep(Inputs::instance.heldStep, step);
             }
             break;
         }
@@ -239,8 +247,8 @@ void update() {
     }
     if (Inputs::instance.playPause.event == controlino::Button::Event::Click)
         uClock.pause();
-    else if (Inputs::instance.playPause.event == controlino::Button::Event::Press)
-        uClock.stop();
+//    else if (Inputs::instance.playPause.event == controlino::Button::Event::Press)
+//        uClock.stop();
 }
 
 

@@ -19,7 +19,7 @@ void drawSteps() {
     for (size_t i = 0; i < STEP_COUNT; i++) {
 
         int x = margin + i * sqSizeMarginRight;
-        if (seq.hasStep(i)) {
+        if (seq.getCurrentTrack().hasStep(i)) {
             if (i % 4 == 0)
                 display.drawRect(x, y, sqSize, sqSize, COLOR_WHITE);
             else
@@ -55,17 +55,21 @@ void printVelocity(byte midiNote) {
 void drawPlayPage() {
     display.setCursor(2, 2);
     display.setTextSize(2);
-    display.print('p');
-    display.print(seq.patternIndex);
+    display.print('t');
+    display.print((int)seq.currentTrackIndex);
+    display.print(F(" #"));
+    display.print(seq.getCurrentTrack().midiChannel);
+    display.print(F(" p"));
+    display.print(seq.getCurrentTrack().patternIndex);
     display.setTextColor(COLOR_WHITE, COLOR_BLACK);
-    if(seq.hasQueuePattern()) {
+    if(seq.getCurrentTrack().hasQueuePattern()) {
         display.print(' ');
         display.setTextColor(COLOR_BLACK, COLOR_WHITE);
-    display.print(seq.queuedPatternIndex);
+    display.print(seq.getCurrentTrack().queuedPatternIndex);
         display.setTextColor(COLOR_WHITE, COLOR_BLACK);
     }
     if(Inputs::instance.heldStep != -1){
-        const Step &step = seq.getStep(Inputs::instance.heldStep);
+        const Step &step = seq.getCurrentTrack().getStep(Inputs::instance.heldStep);
         if(step.isActive()) {
             display.setTextSize(1);
             display.setCursor(2, 2);
@@ -74,7 +78,7 @@ void drawPlayPage() {
             printVelocity(step.velocity);
         }
     } else {
-        printNote(seq.getPattern().note);
+        printNote(seq.getCurrentTrack().getPattern().note);
     }
 
     drawSteps();
