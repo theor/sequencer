@@ -10,23 +10,26 @@
 #include "../display.h"
 #include "inputs.h"
 void drawSteps() {
+    const int sqSize = 4;
+    const int sqSizeHalf = sqSize / 2;
+    const int margin = sqSizeHalf;
+    const int sqSizeMarginRight = sqSize + margin;
 
+    int y = SCREEN_HEIGHT - sqSizeMarginRight;
     for (size_t i = 0; i < STEP_COUNT; i++) {
-        const int sqSize = 4;
-        const int sqSizeHalf = sqSize / 2;
-        const int leftMargin = sqSizeHalf;
-        const int sqSizeMarginRight = sqSize + 2;
+
+        int x = margin + i * sqSizeMarginRight;
         if (seq.hasStep(i)) {
-            int x = leftMargin + i * sqSizeMarginRight;
-            int y = SCREEN_HEIGHT - sqSizeMarginRight;
             if (i % 4 == 0)
                 display.drawRect(x, y, sqSize, sqSize, COLOR_WHITE);
             else
                 display.fillRect(x, y, sqSize, sqSize, COLOR_WHITE);
         } else {
-            display.drawPixel(leftMargin + i * sqSizeMarginRight + sqSizeHalf, SCREEN_HEIGHT - sqSizeHalf,
+            display.drawPixel(margin + i * sqSizeMarginRight + sqSizeHalf, SCREEN_HEIGHT - sqSizeHalf,
                               COLOR_WHITE);
         }
+        if(i == seq.position)
+            display.drawFastHLine(x, y - 2, sqSize, COLOR_WHITE);
     }
 }
 
@@ -37,13 +40,30 @@ void prepareNoteName(byte midiNote) {
     sprintf(noteBuffer, "%s%i", noteNames[midiNote % 12], ((int)midiNote / 12)-1);
 }
 void printNote(byte midiNote) {
-    display.setCursor(20, 9);
+    display.setCursor(128 - 38, 2);
     display.setTextSize(2);
     prepareNoteName(midiNote);
     display.print(noteBuffer);
 
 }
+void printVelocity(byte midiNote) {
+    display.setCursor(128 - 38, 20);
+    display.setTextSize(2);
+    display.print(midiNote);
+
+}
 void drawPlayPage() {
+    display.setCursor(2, 2);
+    display.setTextSize(2);
+    display.print('p');
+    display.print(seq.patternIndex);
+    display.setTextColor(COLOR_WHITE, COLOR_BLACK);
+    if(seq.hasQueuePattern()) {
+        display.print(' ');
+        display.setTextColor(COLOR_BLACK, COLOR_WHITE);
+    display.print(seq.queuedPatternIndex);
+        display.setTextColor(COLOR_WHITE, COLOR_BLACK);
+    }
     if(Inputs::instance.heldStep != -1){
         const Step &step = seq.getStep(Inputs::instance.heldStep);
         if(step.isActive()) {
@@ -51,6 +71,7 @@ void drawPlayPage() {
             display.setCursor(2, 2);
             display.print(Inputs::instance.heldStep);
             printNote(step.note);
+            printVelocity(step.velocity);
         }
     } else {
         printNote(seq.getPattern().note);

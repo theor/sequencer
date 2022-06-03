@@ -178,33 +178,48 @@ void update() {
         case MenuState::Play:
         {
             for (size_t i = 0; i < STEP_COUNT; i++) {
-                switch (Inputs::instance.steps[i].event) {
-                    case controlino::Button::Event::Click:
-                        seq.toggleStep(i);
-                        break;
-                    case controlino::Button::Event::Press:
-                        Inputs::instance.heldStep = i;
-                        break;
-                    case controlino::Button::Event::Up:
-                        Inputs::instance.heldStep = -1;
-                        break;
-                    default:
-                        if(Inputs::instance.heldStep == -1 && Inputs::instance.steps[i].pressed && Inputs::instance.encoderDelta(0) != 0)
+                if(Inputs::instance.shift.pressed){
+                    if(Inputs::instance.steps[i].event == controlino::Button::Event::Click)
+                    {
+                        seq.setPattern(i, true);
+                    }
+                } else {
+                    switch (Inputs::instance.steps[i].event) {
+                        case controlino::Button::Event::Click:
+
+                            seq.toggleStep(i);
+                            break;
+                        case controlino::Button::Event::Press:
                             Inputs::instance.heldStep = i;
-                        break;
+                            break;
+                        case controlino::Button::Event::Up:
+                            Inputs::instance.heldStep = -1;
+                            break;
+                        default:
+                            if (Inputs::instance.heldStep == -1 && Inputs::instance.steps[i].pressed &&
+                                Inputs::instance.encoderDelta(0) != 0)
+                                Inputs::instance.heldStep = i;
+                            break;
+                    }
                 }
             }
 
-            int delta = Inputs::instance.encoderDelta(0);
-            if (delta != 0) {
+            int delta0 = Inputs::instance.encoderDelta(0);
+            int delta1 = Inputs::instance.encoderDelta(1);
+            if (delta0 != 0) {
                 if (Inputs::instance.heldStep != -1) {
                     Step step = seq.getStep(Inputs::instance.heldStep);
-                    step.note = max(0, min(80, step.note + delta));
+                    step.note = max(0, min(80, step.note + delta0));
                     seq.setStep(Inputs::instance.heldStep, step);
                 } else {
                     Pattern &p = seq.getPattern();
-                    p.note = max(0, min(80, p.note + delta));
+                    p.note = max(0, min(80, p.note + delta0));
                 }
+            }
+            if(delta1 != 0 && Inputs::instance.heldStep != -1) {
+                Step step = seq.getStep(Inputs::instance.heldStep);
+                step.velocity = max(0, min(127, step.velocity + delta1));
+                seq.setStep(Inputs::instance.heldStep, step);
             }
             break;
         }

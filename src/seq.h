@@ -10,20 +10,47 @@ struct Seq
 {
 
     size_t patternIndex;
+    size_t queuedPatternIndex;
     volatile byte _position;
-    Pattern patterns[8] = {};
+    static const int PATTERN_COUNT = 8;
+    Pattern patterns[PATTERN_COUNT] = {};
 
     byte _noteRunning;
 
     MIDINoteCallback _noteOn;
     MIDINoteCallback _noteOff;
     bool posChanged = false;
+    byte position = 0;
 
     void setNoteCallbacks(MIDINoteCallback on, MIDINoteCallback off)
     {
         _noteOn = on;
         _noteOff = off;
     }
+
+    // Patterns
+
+    void setPattern(byte patternIndex, bool queue) {
+        byte clamped = max(0, min(patternIndex, PATTERN_COUNT));
+        if(queue)
+            queuedPatternIndex = clamped;
+        else
+        {
+            // same index means no queuing back later
+            queuedPatternIndex = clamped;
+            this->patternIndex = clamped;
+        }
+    }
+
+    Pattern& getPattern() {
+        return patterns[patternIndex];
+    }
+
+    bool hasQueuePattern() {
+        return queuedPatternIndex != patternIndex;
+    }
+
+    // Steps
 
     void toggleStep(byte stepIndex) {
         size_t pageIndex = stepIndex / STEP_COUNT;
@@ -36,10 +63,6 @@ struct Seq
             s.velocity = 127;
         }
 
-    }
-
-    Pattern& getPattern() {
-        return patterns[patternIndex];
     }
 
     Step& getStep(byte stepIndex) {
@@ -63,7 +86,7 @@ struct Seq
     void step(uint8_t pos)
     {
         // increment the position
-        _position = pos % STEP_COUNT;
+        _position = pos;
         posChanged = true;
 
     }
@@ -73,10 +96,17 @@ struct Seq
         noInterrupts();
         bool changed = this->posChanged;
         posChanged = false;
-        auto position = _position;
+        auto rawPosition = _position;
         interrupts();
         if (!changed)
             return;
+
+        position = rawPosition % STEP_COUNT;
+        // TODO pages
+        if(position == 0 && rawPosition / STEP_COUNT > 0 && queuedPatternIndex != patternIndex) // not the first pattern, might have a queued pattern
+        {
+            patternIndex = queuedPatternIndex;
+        }
         Page page = patterns[patternIndex].pages[0];
         Step step = page.steps[position];
 
