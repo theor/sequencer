@@ -16,6 +16,13 @@
 #include "display.h"
 #include "ui/ui.h"
 
+// 16 steps
+// play/pause shift
+// 2 encs
+// 12 left
+// 3 track, pattern, project
+// 2 duplicate clear
+// 2 more encs
 
 const int ledPin = 13;
 
@@ -112,7 +119,7 @@ void loop() {
 
 //        display.fillScreen(COLOR_BLACK);
         update();
-        display.fillScreen(COLOR_BLACK);
+//        display.fillScreen(COLOR_BLACK);
         draw();
     }
 }

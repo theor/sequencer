@@ -79,10 +79,10 @@ static MenuState menuState = MenuState::Play;
 void printMenuState() {
     display.setCursor(SCREEN_WIDTH - 8 * 8, SCREEN_HEIGHT - 8);
     display.setTextSize(1);
-    display.setTextColor(COLOR_WHITE);
+    display.setTextColor(COLOR_WHITE, COLOR_BLACK);
     switch (menuState) {
         case MenuState::Play:
-            display.print(F("Play"));
+            display.print(F("Play    "));
             break;
         case MenuState::Settings:
             display.print(F("Settings"));
@@ -170,6 +170,7 @@ void update() {
         case controlino::Button::Event::ClickPress:
 //            Serial.print(F("shift click press"));
             menuState = menuState == MenuState::Settings ? MenuState::Play : MenuState::Settings;
+            display.fillScreen(COLOR_BLACK);
             break;
         default:
             break;

@@ -10,7 +10,7 @@ FactorEncoder encoders[ENCODER_COUNT];
 
 Inputs Inputs::instance;
 void setupInputs() {
-    encoders[0].begin(30, 29);
+    encoders[0].begin(24,25);
     encoders[1].begin(31, 28);
 }
 void pollInputs() {

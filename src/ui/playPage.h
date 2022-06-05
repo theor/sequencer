@@ -10,9 +10,9 @@
 #include "../display.h"
 #include "inputs.h"
 void drawSteps() {
-    const int sqSize = 4;
+    const int sqSize = 12;
     const int sqSizeHalf = sqSize / 2;
-    const int margin = sqSizeHalf;
+    const int margin = 4;
     const int sqSizeMarginRight = sqSize + margin;
 
     int y = SCREEN_HEIGHT - sqSizeMarginRight;
