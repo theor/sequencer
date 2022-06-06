@@ -2,7 +2,7 @@
 #include <SPI.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
-#include <Adafruit_ST7735.h>
+#include <ST7735_t3.h>
 #include <Adafruit_GFX.h>
 #include <array>
 
@@ -119,7 +119,8 @@ void loop() {
 
 //        display.fillScreen(COLOR_BLACK);
         update();
-//        display.fillScreen(COLOR_BLACK);
+        display.fillScreen(COLOR_BLACK);
         draw();
+        display.updateScreen();
     }
 }

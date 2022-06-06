@@ -3,9 +3,13 @@
 #define DISPLAY_H
 
 #include "config.h"
+#include "src/Yeysk16pt7b.h"
 #include <SPI.h>
 #include <Adafruit_GFX.h>
-#include <Adafruit_ST7735.h>
+#include <ST7735_t3.h>
+#include <Fonts/FreeSans9pt7b.h>
+#include <Fonts/Org_01.h>
+
 #define COLOR_BLACK ST7735_BLACK   ///< Draw 'off' pixels
 #define COLOR_WHITE ST7735_WHITE   ///< Draw 'on' pixels
 #define COLOR_INVERSE 2 ///< Invert pixels
@@ -18,13 +22,41 @@
 #define TFT_MOSI         26 //SDA
 #define TFT_SCLK         27
 //static Adafruit_ST7735 display = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
-static Adafruit_ST7735 display = Adafruit_ST7735(&SPI1, TFT_CS, TFT_DC, TFT_RST);
+static ST7735_t3 display = ST7735_t3(TFT_CS, TFT_DC, TFT_MOSI,TFT_SCLK, TFT_RST);
 static const float INV_DEG3 = 60.0f / PI;
 static const float DEG3 = PI / 60.0f;
 
+FLASHMEM void renderBootUpPage()
+{
+    display.fillScreen(ST7735_BLACK);
+    display.drawRect(42, 30, 46, 11, ST7735_WHITE);
+    display.fillRect(88, 30, 61, 11, ST7735_WHITE);
+    display.setCursor(45, 31);
+    display.setFont(&Org_01);
+    display.setTextSize(1);
+    display.setTextColor(ST7735_WHITE);
+    display.println(F("ELECTRO"));
+    display.setTextColor(ST7735_BLACK);
+    display.setCursor(91, 37);
+    display.println(F("TECHNIQUE"));
+    display.setTextColor(ST7735_YELLOW);
+    display.setFont(&Yeysk16pt7b);
+    display.setCursor(5, 70);
+    display.setTextSize(1);
+    display.println(F("TSynth"));
+    display.setTextColor(ST7735_RED);
+    display.setFont(&FreeSans9pt7b);
+    display.setCursor(110, 95);
+    display.println(F("0.0.1"));
+}
+
 void initDisplay(){
     display.initR(INITR_BLACKTAB);
+
+    display.useFrameBuffer(true);
     display.setRotation(1);
+    renderBootUpPage();
+    display.updateScreen();
 }
 
 void fillArc2(int x, int y, float start_angle, int seg_count, int rx, int ry, int w, unsigned int colour)
